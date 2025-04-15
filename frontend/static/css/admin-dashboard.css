@@ -1,0 +1,161 @@
+/* Dashboard Color Scheme */
+:root {
+    --isro-blue: #0066b2;
+    --isro-orange: #FF671F;
+    --isro-dark: #0A2948;
+    --isro-light: #E3F2FD;
+    --text-dark: #2c3e50;
+    --text-light: #ecf0f1;
+}
+
+/* Dashboard Layout */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: var(--isro-dark);
+    color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.dashboard-logo {
+    height: 50px;
+    width: auto;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    padding: 2rem;
+}
+
+.metric-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    border-left: 4px solid var(--isro-blue);
+}
+
+.dashboard-main {
+    padding: 0 2rem 2rem;
+}
+
+.chart-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+/* Charts */
+.chart-container {
+    background: white;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    height: 400px;
+}
+
+.chart-container h2 {
+    color: var(--isro-dark);
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+/* Knowledge Submission */
+.knowledge-submission {
+    margin-top: 2rem;
+    background: white;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.knowledge-submission h2 {
+    color: var(--isro-dark);
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--isro-dark);
+    font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid var(--isro-light);
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.form-group input[type="file"] {
+    padding: 0.5rem;
+}
+
+.btn-submit {
+    background: var(--isro-blue);
+    color: white;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.btn-submit:hover {
+    background: var(--isro-orange);
+}
+
+/* Buttons */
+.btn-logout {
+    background: var(--isro-orange);
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background: #e55b1a;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .chart-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .chart-container {
+        height: auto;
+    }
+}
+
+@media (max-width: 768px) {
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-main {
+        padding: 0 1rem;
+    }
+}

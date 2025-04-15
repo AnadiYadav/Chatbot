@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NRSC Superadmin Dashboard</title>
+    <link rel="stylesheet" href="/frontend/static/css/main.css">
+    <link rel="stylesheet" href="/frontend/static/css/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Dashboard Header -->
+    <header class="dashboard-header">
+        <img src="/frontend/static/images/nrsc-logo.png" alt="NRSC Logo" class="dashboard-logo">
+        <nav>
+            <button class="btn-logout" onclick="handleLogout()">Logout</button>
+        </nav>
+    </header>
+
+    <!-- Metrics Overview -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <h3>Total Queries</h3>
+            <div class="metric-value" id="totalQueries">0</div>
+        </div>
+        <div class="metric-card">
+            <h3>Active Sessions</h3>
+            <div class="metric-value" id="activeSessions">0</div>
+        </div>
+        <div class="metric-card">
+            <h3>Pending Approvals</h3>
+            <div class="metric-value" id="pendingApprovals">0</div>
+        </div>
+        <div class="metric-card">
+            <h3>Total Admins</h3>
+            <div class="metric-value" id="totalAdmins">0</div>
+        </div>
+    </div>
+
+
+    <!-- Main Content Area -->
+    <main class="dashboard-main">
+        <!-- Top Row Charts -->
+        <div class="chart-row">
+            <div class="chart-container">
+                <h2>Frequently Asked Questions</h2>
+                <canvas id="faqChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h2>Pending Requests</h2>
+                <canvas id="approvalChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Bottom Row Charts -->
+        <div class="chart-row">
+            <div class="chart-container">
+                <h2>Sentiment Analysis</h2>
+                <canvas id="sentimentChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h2>Visitor Statistics</h2>
+                <canvas id="visitorChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Admin Management Section -->
+        <section class="admin-management">
+            <div class="admin-actions">
+                <button class="btn-primary" onclick="showAdminForm()">
+                    <span>+</span> Add New Admin
+                </button>
+                <button class="btn-primary" onclick="showRequestHistory()">
+                    Request History
+                </button>
+            </div>
+            
+            <!-- Pending Requests Table -->
+            <div class="requests-table">
+                <h2>Pending Requests (<span id="pendingCount">15</span>)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Admin Name</th>
+                            <th>Request Type</th>
+                            <th>Date Submitted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="requestsBody">
+                        <!-- Dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+
+        <!-- Request History Modal Section-->
+            <div id="historyModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeHistoryModal()">&times;</span>
+                    <h2>Request Decision History</h2>
+                    <div class="requests-table">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Admin</th>
+                                    <th>Request Title</th>
+                                    <th>Type</th>
+                                    <th>Decision</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historyBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Add Admin Modal -->
+    <div id="adminModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Create New Admin</h2>
+            <form id="adminForm">
+                <div class="form-group">
+                    <label>Official Email</label>
+                    <input type="email" id="adminEmail" required 
+                           placeholder="name@nrsc.gov.in">
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="adminPassword" required
+                           placeholder="••••••••" 
+                           minlength="8">
+                </div>
+                <div class="form-group">
+                    <label>Access Level</label>
+                    <select id="adminRole" required>
+                        <option value="admin">Admin</option>
+                        <option value="superadmin">Superadmin</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit">Create Admin</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/frontend/static/js/dashboard.js"></script>
+</body>
+</html>
