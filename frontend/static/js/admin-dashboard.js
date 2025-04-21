@@ -1,75 +1,53 @@
 /**
  * NRSC Admin Dashboard Controller
- * Handles knowledge submission and dashboard metrics
+ * Handles dashboard visualization and knowledge submission
  */
 
-// Initialize Dashboard
-document.addEventListener('DOMContentLoaded', () => {
-    initializeCharts();
-    loadActiveSessions();
-    togglePDFField(); // Initialize form fields
-    
-    // Form submission handler
-    document.getElementById('knowledgeForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        await submitKnowledgeRequest();
-    });
-});
+// Configuration
+const API_BASE_URL = 'http://localhost:3000/api';
 
-// Toggle between text and PDF fields
-function togglePDFField() {
-    const type = document.getElementById('knowledgeType').value;
-    document.getElementById('textContentGroup').style.display = type === 'pdf' ? 'none' : 'block';
-    document.getElementById('pdfContentGroup').style.display = type === 'pdf' ? 'block' : 'none';
-    
-    // Clear required attributes when hidden
-    if (type !== 'pdf') {
-        document.getElementById('knowledgePDF').required = false;
-        document.getElementById('knowledgeContent').required = true;
-    } else {
-        document.getElementById('knowledgePDF').required = true;
-        document.getElementById('knowledgeContent').required = false;
-    }
-}
-
-// Submit knowledge request
-async function submitKnowledgeRequest() {
-    const formData = new FormData();
-    const form = document.getElementById('knowledgeForm');
-    
-    formData.append('title', document.getElementById('knowledgeTitle').value);
-    formData.append('type', document.getElementById('knowledgeType').value);
-    formData.append('description', document.getElementById('knowledgeDesc').value);
-    
-    if (document.getElementById('knowledgeType').value === 'pdf') {
-        formData.append('file', document.getElementById('knowledgePDF').files[0]);
-    } else {
-        formData.append('content', document.getElementById('knowledgeContent').value);
-    }
-
+// Initialize Dashboard with Authentication Check
+document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const response = await fetch('/api/knowledge-requests', {
-            method: 'POST',
+        // Verify authentication status
+        const authCheck = await fetch(`${API_BASE_URL}/admin-data`, {
+            method: 'GET',
             credentials: 'include',
-            body: formData
+            headers: {
+                'Content-Type': 'application/json'
+            }
         });
 
-        const data = await response.json();
+        const authData = await authCheck.json();
         
-        if (!response.ok) throw new Error(data.message || 'Submission failed');
-        
-        alert('NRSC: Knowledge submitted for approval');
-        form.reset();
+        if (!authCheck.ok) {
+            // Clear invalid cookies and redirect
+            document.cookie = 'authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            window.location.href = '/frontend/templates/admin-login.html';
+            return;
+        }
+
+        // Initialize dashboard components
+        initializeCharts();
+        loadActiveSessions();
+        loadTotalAdmins();
+        setInterval(loadActiveSessions, 30000);
+
+        // Form submission handler
+        document.getElementById('knowledgeForm').addEventListener('submit', handleKnowledgeSubmission);
+
     } catch (error) {
-        console.error('Submission Error:', error);
-        alert(`NRSC Error: ${error.message}`);
+        console.error('Authentication check failed:', error);
+        document.cookie = 'authToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        window.location.href = '/frontend/templates/admin-login.html';
     }
-}
+});
 
 // Chart Initialization
 function initializeCharts() {
-    // FAQ Chart
-    new Chart(document.getElementById('faqChart').getContext('2d'), {
+    // Frequently Asked Questions Chart
+    const faqCtx = document.getElementById('faqChart').getContext('2d');
+    new Chart(faqCtx, {
         type: 'bar',
         data: {
             labels: ['Satellite Data', 'GIS Mapping', 'Weather', 'Sensors', 'Other'],
@@ -87,8 +65,9 @@ function initializeCharts() {
         }
     });
 
-    // Visitor Chart
-    new Chart(document.getElementById('visitorChart').getContext('2d'), {
+    // Visitor Statistics Chart
+    const visitorCtx = document.getElementById('visitorChart').getContext('2d');
+    new Chart(visitorCtx, {
         type: 'line',
         data: {
             labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
@@ -106,12 +85,54 @@ function initializeCharts() {
             plugins: { legend: { position: 'top' } }
         }
     });
+
+    // Sentiment Analysis Chart
+    const sentimentCtx = document.getElementById('sentimentChart').getContext('2d');
+    const style = getComputedStyle(document.documentElement);
+    new Chart(sentimentCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Positive', 'Neutral', 'Negative'],
+            datasets: [{
+                data: [65, 25, 10],
+                backgroundColor: [
+                    style.getPropertyValue('--success-green'),
+                    style.getPropertyValue('--warning-yellow'),
+                    style.getPropertyValue('--error-red')
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            cutout: '70%'
+        }
+    });
+
+    // Approval Status Chart
+    const approvalCtx = document.getElementById('approvalChart').getContext('2d');
+    new Chart(approvalCtx, {
+        type: 'pie',
+        data: {
+            labels: ['Approved', 'Pending', 'Rejected'],
+            datasets: [{
+                data: [70, 15, 15],
+                backgroundColor: ['#4CAF50', '#FFC107', '#F44336']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
 }
 
-// Load active sessions
+// Load Active Sessions
 async function loadActiveSessions() {
     try {
-        const response = await fetch('/api/active-sessions', {
+        const response = await fetch(`${API_BASE_URL}/active-sessions`, {
             credentials: 'include'
         });
         const data = await response.json();
@@ -121,12 +142,73 @@ async function loadActiveSessions() {
     }
 }
 
-// Logout handler
+// Load Total Admins
+async function loadTotalAdmins() {
+    try {
+        const response = await fetch(`${API_BASE_URL}/total-admins`, {
+            credentials: 'include'
+        });
+        const data = await response.json();
+        document.getElementById('totalAdmins').textContent = data.count;
+    } catch (error) {
+        console.error('Total admins error:', error);
+    }
+}
+
+// Handle Knowledge Submission
+async function handleKnowledgeSubmission(e) {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    formData.append('title', document.getElementById('knowledgeTitle').value);
+    formData.append('type', document.getElementById('knowledgeType').value);
+    formData.append('description', document.getElementById('knowledgeDesc').value);
+
+    if (document.getElementById('knowledgeType').value === 'pdf') {
+        formData.append('file', document.getElementById('knowledgePDF').files[0]);
+    } else {
+        formData.append('content', document.getElementById('knowledgeContent').value);
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/knowledge-requests`, {
+            method: 'POST',
+            credentials: 'include',
+            body: formData
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Submission failed');
+        }
+
+        alert('NRSC: Knowledge submitted for approval');
+        document.getElementById('knowledgeForm').reset();
+    } catch (error) {
+        console.error('Submission Error:', error);
+        alert(`NRSC Error: ${error.message}`);
+    }
+}
+
+// Toggle PDF/Text Input
+function togglePDFField() {
+    const type = document.getElementById('knowledgeType').value;
+    document.getElementById('textContentGroup').style.display = type === 'pdf' ? 'none' : 'block';
+    document.getElementById('pdfContentGroup').style.display = type === 'pdf' ? 'block' : 'none';
+    
+    // Update required fields
+    document.getElementById('knowledgeContent').required = type !== 'pdf';
+    document.getElementById('knowledgePDF').required = type === 'pdf';
+}
+
+// Logout Handler
 function handleLogout() {
-    fetch('/api/logout', {
+    fetch(`${API_BASE_URL}/logout`, {
         method: 'POST',
         credentials: 'include'
     }).then(() => {
         window.location.href = '/frontend/templates/admin-login.html';
+    }).catch(error => {
+        console.error('Logout Error:', error);
     });
 }
