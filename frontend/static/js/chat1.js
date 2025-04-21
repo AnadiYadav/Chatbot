@@ -52,7 +52,7 @@ async function sendMessage() {
 
         // Call backend API
         // const response = await fetch(`${API_BASE_URL}/ask`, {           //For Local System Api
-        const response = await fetch(`https://ayushs9020-aaadf.hf.space/gradio_api/call/chat`, {  
+        const response = await fetch(`https://8888-01js1h540pyys2dz7kcae1fbk9.cloudspaces.litng.ai/ask`, {  
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

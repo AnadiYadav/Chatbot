@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NRSC Admin Dashboard</title>
-    <link rel="stylesheet" href="/frontend/static/css/admin-dashboard.css">
     <link rel="stylesheet" href="/frontend/static/css/main.css">
+    <link rel="stylesheet" href="/frontend/static/css/admin-dashboard.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <!-- Dashboard Header -->
     <header class="dashboard-header">
         <img src="/frontend/static/images/nrsc-logo.png" alt="NRSC Logo" class="dashboard-logo">
+        <h1>Admin Dashboard</h1>
         <nav>
             <button class="btn-logout" onclick="handleLogout()">Logout</button>
         </nav>
@@ -21,18 +22,15 @@
     <div class="metrics-grid">
         <div class="metric-card">
             <h3>Total Queries</h3>
-            <div class="metric-value" id="totalQueries">1,234</div>
-            <div class="metric-trend">↑ 12% from last month</div>
+            <div class="metric-value" id="totalQueries">0</div>
         </div>
         <div class="metric-card">
             <h3>Active Sessions</h3>
-            <div class="metric-value" id="activeSessions">89</div>
-            <div class="metric-trend">↓ 5% from yesterday</div>
+            <div class="metric-value" id="activeSessions">0</div>
         </div>
         <div class="metric-card">
-            <h3>System Health</h3>
-            <div class="metric-value" id="systemHealth">98%</div>
-            <div class="metric-trend">All systems normal</div>
+            <h3>Total Admins</h3>
+            <div class="metric-value" id="totalAdmins">0</div>
         </div>
     </div>
 
@@ -50,13 +48,26 @@
             </div>
         </div>
 
+        <!-- Bottom Row Charts -->
+        <div class="chart-row">
+            <div class="chart-container">
+                <h2>Sentiment Analysis</h2>
+                <canvas id="sentimentChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h2>Approval Status</h2>
+                <canvas id="approvalChart"></canvas>
+            </div>
+        </div>
+
         <!-- Knowledge Submission Section -->
         <section class="knowledge-submission">
             <h2>Update Chatbot Knowledge</h2>
             <form id="knowledgeForm" enctype="multipart/form-data">
                 <div class="form-group">
                     <label>Title*</label>
-                    <input type="text" id="knowledgeTitle" required placeholder="e.g. New Satellite Specifications">
+                    <input type="text" id="knowledgeTitle" required 
+                           placeholder="e.g. Satellite Specifications">
                 </div>
                 
                 <div class="form-group">
@@ -70,7 +81,8 @@
                 
                 <div class="form-group" id="textContentGroup">
                     <label>Content*</label>
-                    <textarea id="knowledgeContent" rows="5" placeholder="Enter Link"></textarea>
+                    <textarea id="knowledgeContent" rows="5" required 
+                              placeholder="Enter content or URL"></textarea>
                 </div>
                 
                 <div class="form-group" id="pdfContentGroup" style="display:none">
@@ -80,7 +92,8 @@
                 
                 <div class="form-group">
                     <label>Description</label>
-                    <textarea id="knowledgeDesc" rows="3" placeholder="Brief description (optional)"></textarea>
+                    <textarea id="knowledgeDesc" rows="3" 
+                              placeholder="Additional information (optional)"></textarea>
                 </div>
                 
                 <button type="submit" class="btn-submit">Submit for Approval</button>

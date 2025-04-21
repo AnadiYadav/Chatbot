@@ -196,6 +196,16 @@
     line-height: 1.4;
     animation: messageAppear 0.3s ease;
 }
+.retry-notice {
+    color: #666;
+    font-size: 0.8em;
+    margin-top: 5px;
+    font-style: italic;
+}
+.error-message {
+    color: #d32f2f;
+    background-color: #ffebee;
+}
 
 @keyframes messageAppear {
     from { opacity: 0; transform: translateY(10px); }

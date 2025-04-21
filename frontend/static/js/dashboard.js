@@ -136,9 +136,7 @@ new Chart(sentimentCtx, {
     }
 });
 
-// Improved hexToRGBA function with error handling
 function hexToRGBA(hex, alpha = 1) {
-    // Handle shorthand hex (#RGB)
     hex = hex.replace('#', '');
     if (hex.length === 3) {
         hex = hex.split('').map(char => char + char).join('');
